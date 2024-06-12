@@ -29,6 +29,15 @@ $(VENV_DIR)/touchfile:
 	. $(VENV_DIR)/bin/activate; pip install -U -r $(ETC_DIR)/requirements.txt -r $(ETC_DIR)/requirements.development.txt -r $(ETC_DIR)/requirements.testing.txt
 	touch $(VENV_DIR)/touchfile
 
+build:
+	python -m build
+
+upload-test:
+	python3 -m twine upload --verbose --repository testpypi dist/*
+
+upload:
+	python3 -m twine upload dist/*
+
 pyright:  # Runs pyright
 	pyright
 
