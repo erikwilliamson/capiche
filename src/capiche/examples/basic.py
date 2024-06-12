@@ -20,9 +20,9 @@ def do_call(duration: int) -> str:
 
 def call_example_com() -> requests.Response:
     logging.debug("Making request to example.com")
-    return requests.get("https://official-joke-api.appspot.com/random_joke")
+    response = requests.get("https://official-joke-api.appspot.com/random_joke")
     logging.debug("Made request to example.com")
-
+    return response
 
 def handle_response(response: requests.Response):
     response = response.json()
