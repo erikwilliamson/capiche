@@ -18,10 +18,11 @@ def do_call(duration: int) -> str:
     return f"do call: {duration}"
 
 
-def call_example_com() -> requests.Response:
-    logging.debug("Making request to example.com")
-    response = requests.get("https://official-joke-api.appspot.com/random_joke")
-    logging.debug("Made request to example.com")
+def call_remote_api() -> requests.Response:
+    endpoint = "https://official-joke-api.appspot.com/random_joke"
+    logging.debug(f"Making request to {endpoint}")
+    response = requests.get(url=endpoint)
+    logging.debug(f"Made request to {endpoint}")
     return response
 
 def handle_response(response: requests.Response):
@@ -49,7 +50,7 @@ if __name__ == "__main__":
         try:
             # t.queue_request(method=do_call, kwargs={"duration": sleep_time}, use_cache=True)
             # t.queue_request(method=call_example_com, use_cache=True)
-            t.queue_request(method=call_example_com, use_cache=False)
+            t.queue_request(method=call_remote_api, use_cache=False)
         except QueueFullException as e:
             logging.error(e)
 
