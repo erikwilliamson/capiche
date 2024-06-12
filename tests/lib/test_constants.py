@@ -1,4 +1,6 @@
-from capiche.lib.constants import THREAD_SLEEP_TIME, DEFAULT_CACHE_DURATION
+# Application-Local Imports
+from capiche.lib.constants import DEFAULT_CACHE_DURATION, THREAD_SLEEP_TIME
+
 
 class TestConstants:
     def test_constants(self):

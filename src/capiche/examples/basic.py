@@ -3,14 +3,15 @@ import logging
 import random
 import time
 
+# 3rd-Party Imports
 import requests
 
 # Application-Local Imports
-from capiche.lib import ThrottledQueue, CallbackHandler
-from capiche.lib.exceptions import QueueFullException
+from capiche.lib import CallbackHandler, ThrottledQueue
 from capiche.lib.constants import THREAD_SLEEP_TIME
+from capiche.lib.exceptions import QueueFullException
 
-logging.basicConfig(filename='/tmp/example.log', level=logging.INFO)
+logging.basicConfig(filename="/tmp/example.log", level=logging.INFO)
 
 
 def do_call(duration: int) -> str:
@@ -25,6 +26,7 @@ def call_remote_api() -> requests.Response:
     logging.debug(f"Made request to {endpoint}")
     return response
 
+
 def handle_response(response: requests.Response):
     response = response.json()
     logging.info(f"Response: {response['setup']} {response['punchline']}")
@@ -36,7 +38,7 @@ if __name__ == "__main__":
         window=3,
         cache_age=300,
         callback=CallbackHandler[requests.Response](callback=handle_response),
-        max_queue_size=None
+        max_queue_size=None,
     )
 
     t.start()

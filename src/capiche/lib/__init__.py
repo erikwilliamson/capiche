@@ -1,9 +1,9 @@
 # Standard Library Imports
-from datetime import datetime, timedelta, UTC
 import logging
 import threading
 import time
 from collections import deque
+from datetime import UTC, datetime, timedelta
 from typing import Callable, Dict, List, Optional
 
 # Local Folder Imports
@@ -13,12 +13,14 @@ from .exceptions import QueueFullException
 logger = logging.getLogger(__name__)
 logger.level = logging.DEBUG
 
+
 class CallbackHandler[T]:
     def __init__(self, callback: Callable):
         self.callback = callback
 
     def __call__(self, response: T):
         return self.callback(response=response)
+
 
 class ThrottledRequest:
     def __init__(self, method: Callable, args: List | None = None, kwargs: Dict | None = None, use_cache: bool = False):
@@ -126,7 +128,7 @@ class ThrottledQueue(threading.Thread):
 
         if cutoff_index is not None:
             logger.info(f"removing {cutoff_index + 1} completed requests from queue")
-            self.completed_api_call_times = self.completed_api_call_times[cutoff_index + 1:]
+            self.completed_api_call_times = self.completed_api_call_times[cutoff_index + 1 :]
 
     def run(self):
         last_log_line = ""
@@ -157,11 +159,12 @@ class ThrottledQueue(threading.Thread):
         self.queue.append(request)
         return request
 
-
     def process_request(self, request: ThrottledRequest) -> None:
         now = datetime.now(UTC)
 
-        logger.info(f"request.use_cache: {request.use_cache}, request.cache_key: {request.cache_key}, self.cache: {self.cache}")
+        logger.info(
+            f"request.use_cache: {request.use_cache}, request.cache_key: {request.cache_key}, self.cache: {self.cache}"
+        )
 
         if request.use_cache and request.cache_key in self.cache:
             logger.debug(f"Making request with cache key: {request.cache_key}")
