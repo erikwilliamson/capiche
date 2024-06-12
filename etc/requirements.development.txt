@@ -1,0 +1,12 @@
+mypy
+flake8
+black
+isort
+pre-commit
+vulture
+pylint
+pylint-pydantic
+pyright
+ruff
+icecream
+bpython

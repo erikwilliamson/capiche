@@ -1,2 +1,2 @@
 # capiche
-A Python Library for Rate-Limiting and Queueing of Function Calls
+A Python Library for Rate-Limiting and Queueing Requests to External Services
