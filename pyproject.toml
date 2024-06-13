@@ -7,7 +7,7 @@ name = "capiche"
 authors = [
     {name = "Erik Williamson", email = "erik.williamson@gmail.com"},
 ]
-description = "A Library for Throttling Requests to External APIs"
+description = "A Library for Throttling Requests to Functions"
 keywords = ["throttle", "rate-limit", "api"]
 readme = "README.md"
 requires-python = ">=3.12"
@@ -122,3 +122,9 @@ min_confidence = 80
 [tool.coverage.report]
 sort = "Cover"
 skip_covered = true
+
+[tool.coverage.run]
+omit = [
+    # omit anything in the examples directory
+    "src/capiche/examples/*"
+    ]

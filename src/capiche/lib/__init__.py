@@ -73,7 +73,11 @@ class ThrottledQueue(threading.Thread):
         self.callback = callback
 
     def __repr__(self):
-        return f"ThrottledQueue(max_rate={self.max_rate}, window={self.window}, callback={self.callback.__name__}, max_queue_size={self.max_queue_size}, cache_age={self.cache_age}"
+        return (
+            f"ThrottledQueue(max_rate={self.max_rate}, window={self.window}, "
+            f"callback={self.callback_name}, max_queue_size={self.max_queue_size}, "
+            f"cache_age={self.cache_age}"
+        )
 
     @property
     def callback_name(self) -> str:
@@ -108,7 +112,6 @@ class ThrottledQueue(threading.Thread):
         cutoff = datetime.now(UTC) - timedelta(seconds=self.cache_age)
         removables = []
 
-        # for key, (timestamp, _) in self.cache.items():
         for key, (timestamp, _) in list(self.cache.items()):
             if timestamp < cutoff:
                 removables.append(key)
@@ -131,9 +134,6 @@ class ThrottledQueue(threading.Thread):
             self.completed_api_call_times = self.completed_api_call_times[cutoff_index + 1 :]
 
     def run(self):
-        last_log_line = ""
-        repeats = 0
-
         while True:
             self.trim_completed()
             self.trim_cache()
@@ -145,8 +145,7 @@ class ThrottledQueue(threading.Thread):
                 else:
                     # remove the oldest request from the queue and process it
                     request = self.queue.popleft()
-                    logger.info(f"processing request: {request}")
-                    logger.info(f"self.queue length: {len(self.queue)}")
+                    logger.info(f"processing request: {request} -- self.queue length: {len(self.queue)}")
                     self.process_request(request)
 
     def queue_request(
