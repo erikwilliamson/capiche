@@ -11,9 +11,9 @@ class MessageException(Exception):
 
 
 @dataclass
-class ThrottlerException(Exception):
+class CapicheException(Exception):
     pass
 
 
-class QueueFullException(ThrottlerException, MessageException):
+class QueueFullException(CapicheException, MessageException):
     message = "Queue is full. Please try again later"

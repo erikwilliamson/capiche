@@ -29,13 +29,13 @@ $(VENV_DIR)/touchfile:
 	. $(VENV_DIR)/bin/activate; pip install -U -r $(ETC_DIR)/requirements.txt -r $(ETC_DIR)/requirements.development.txt -r $(ETC_DIR)/requirements.testing.txt
 	touch $(VENV_DIR)/touchfile
 
-build:
+build:  # Generate distributables
 	python -m build
 
-upload-test:
+upload-test:  # Upload packages to PyPi Test
 	python3 -m twine upload --verbose --repository testpypi dist/*
 
-upload:
+upload:  # Upload packages to PyPi
 	python3 -m twine upload dist/*
 
 pyright:  # Runs pyright

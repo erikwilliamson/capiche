@@ -7,6 +7,7 @@ import requests
 
 # Application-Local Imports
 from capiche.lib import CallbackHandler, ThrottledQueue
+from capiche.lib.exceptions import QueueFullException
 
 
 def simple_callback(response: requests.Response) -> str:
@@ -15,6 +16,10 @@ def simple_callback(response: requests.Response) -> str:
 
 def simple_request_no_args_no_return() -> None:
     pass
+
+
+def request_with_sleep(duration: int) -> None:
+    time.sleep(duration)
 
 
 def simple_request_no_args_with_static_return() -> str:
@@ -136,7 +141,7 @@ class TestCache:
 
         assert len(tq.completed_api_call_times) == 1
 
-    def test_cache_with_named_args_with_cache_hit(self):
+    def test_cache_with_named_args_with_no_cache_hit(self):
         tq = ThrottledQueue(
             max_rate=10,
             window=1,
@@ -160,3 +165,55 @@ class TestCache:
         time.sleep(0.1)
 
         assert len(tq.completed_api_call_times) == 2
+
+    def test_cache_with_positional_args_with_no_cache_hit(self):
+        tq = ThrottledQueue(
+            max_rate=10,
+            window=1,
+            cache_age=30,
+            callback=CallbackHandler[requests.Response](callback=simple_callback),
+            max_queue_size=2,
+        )
+
+        tq.start()
+
+        tq.queue_request(method=simple_request_that_returns_single_arg, args=[1], use_cache=True)
+
+        time.sleep(0.1)
+
+        assert len(tq.completed_api_call_times) == 1
+
+        time.sleep(0.1)
+
+        tq.queue_request(method=simple_request_that_returns_single_arg, args=[2], use_cache=True)
+
+        time.sleep(0.1)
+
+        assert len(tq.completed_api_call_times) == 2
+
+    def test_queue_is_full(self):
+        tq = ThrottledQueue(
+            max_rate=1,
+            window=1,
+            callback=CallbackHandler[requests.Response](callback=simple_callback),
+            max_queue_size=1,
+        )
+
+        tq.queue_request(method=simple_request_no_args_no_return, use_cache=True)
+
+        with pytest.raises(QueueFullException):
+            tq.queue_request(method=simple_request_no_args_no_return, use_cache=True)
+
+    def test_rate_limit_reached(self):
+        tq = ThrottledQueue(
+            max_rate=1,
+            window=1,
+            callback=CallbackHandler[requests.Response](callback=simple_callback),
+        )
+
+        tq.start()
+
+        for _ in range(tq.max_rate + 1):
+            tq.queue_request(method=request_with_sleep, kwargs={"duration": 2}, use_cache=False)
+
+        assert tq.rate_limit_reached

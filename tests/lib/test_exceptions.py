@@ -9,6 +9,7 @@ import requests
 from capiche.lib import CallbackHandler, ThrottledQueue
 from capiche.lib.exceptions import MessageException
 
+
 def simple_callback(response: requests.Response) -> str:
     return f"RESPONSE: {response}"
 
